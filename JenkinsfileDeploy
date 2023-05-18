@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Create image from Dockerfile') {
+            steps {
+                sh 'docker network create --driver bridge devops-net || true'
+                sh 'docker build -t ui-devops-${GIT_BRANCH}-1.0.0:${BUILD_NUMBER} .'
+            }
+        }
+        stage('Stop older version containers'){
+            steps {
+                sh ''' 
+                containers=$(docker ps | grep ui-devops* | awk '{print $1}')
+                if [ ! -z $containers ];
+                then
+	                docker container stop $containers
+                fi
+                ''' 
+            }
+        }
+        stage('Run container'){
+            steps{
+                sh 'docker run -d -p 4000:80 --network devops-net ui-devops-${GIT_BRANCH}-1.0.0:${BUILD_NUMBER}'
+            }
+        }
+    }
+}
