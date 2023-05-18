@@ -4,8 +4,6 @@
       <b-navbar toggleable="lg" type="dark" variant="info">
         <b-navbar-brand href="#">MENU</b-navbar-brand>
 
-        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
             <router-link to="/dashboardprofesores"><b-button variant="link">Profesores</b-button> </router-link>
@@ -18,7 +16,7 @@
         </b-collapse>
         <b-navbar-nav class="my-2 my-lg-0">
           <b-button pill variant="danger" v-on:click="logout">Logout</b-button>
-          </b-navbar-nav>
+        </b-navbar-nav>
       </b-navbar>
     </header>
   </div>
