@@ -19,67 +19,106 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/dashboardprofesores',
     name: 'Dashboardprofesores',
-    component: DashboardProfesores
+    component: DashboardProfesores,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/dashboardalumnos',
     name: 'Dashboardalumnos',
-    component: DashboardAlumnos
+    component: DashboardAlumnos,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/dashboardsalones',
     name: 'Dashboardsalones',
-    component: DashboardSalones
+    component: DashboardSalones,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/dashboardasignaturas',
     name: 'Dashboardasignaturas',
-    component: DashboardAsignaturas
+    component: DashboardAsignaturas,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/editar/:id/profesores',
     name: 'EditarProfesores',
-    component: Editar
+    component: Editar,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/editar/:id/alumnos',
     name: 'EditarAlumnos',
-    component: Editar
+    component: Editar,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/editar/:id/salones',
     name: 'EditarSalones',
-    component: Editar
+    component: Editar,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/editar/:id/asignaturas',
     name: 'EditarAsignaturas',
-    component: Editar
+    component: Editar,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/crear/profesores',
     name: 'CrearProfesores',
-    component: Crear
+    component: Crear,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/crear/alumnos',
     name: 'CrearAlumnos',
-    component: Crear
+    component: Crear,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/crear/asignaturas',
     name: 'CrearAsignaturas',
-    component: Crear
+    component: Crear,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/crear/salones',
     name: 'CrearSalones',
-    component: Crear
+    component: Crear,
+    meta: {
+      requiresAuth: true
+    }
   },
 ];
 
@@ -87,5 +126,21 @@ const router = createRouter({
   history: createWebHistory(), // Opcional: Modo de enrutamiento (history, hash)
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !isUserAuthenticated()) {
+    // Si la ruta requiere autenticación y el usuario no está autenticado, redirigir al login
+    next({ name: 'Login' });
+  } else {
+    // De lo contrario, permitir la navegación
+    next();
+  }
+});
+
+// Función para verificar si el usuario está autenticado (puedes ajustarla según tus necesidades)
+function isUserAuthenticated() {
+  const token = localStorage.getItem('token');
+  return token && token !== 'null' && token !== 'undefined'; // Verifica si el token existe y tiene un valor válido
+}
 
 export default router;

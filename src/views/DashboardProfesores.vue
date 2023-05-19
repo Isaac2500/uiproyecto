@@ -93,18 +93,9 @@ export default {
       })
       .catch(error=>{
           
-        /* if (error.response.status == 401) {
-          
-          this.$router.push('/');
-          toast.error('Su sesion ha expirado. Por favor Inicie sesion de nuevo',{
-            autoClose: 3000
-          });
-          
-        } */
+        
           console.log(error)
-          /* toast.error(error.response.data.message,{
-            autoClose: 3000
-          }); */
+          
       })
     },
     fetchProfesores(){
@@ -115,18 +106,8 @@ export default {
       })
       .catch(error=>{
           
-        /* if (error.response.status == 401) {
-          
-          this.$router.push('/');
-          toast.error('Su sesion ha expirado. Por favor Inicie sesion de nuevo',{
-            autoClose: 3000
-          });
-          
-        } */
           console.log(error)
-          /* toast.error(error.response.data.message,{
-            autoClose: 3000
-          }); */
+          
       })
     },
     refreshToken() {
