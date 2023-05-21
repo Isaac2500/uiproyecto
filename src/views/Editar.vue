@@ -104,6 +104,7 @@
                 <br />
                 <div class="col-md-12">
                   <input
+                    id="send-profesor"
                     type="submit"
                     class="btn btn-primary btn-send pt-2 btn-block"
                     value="Enviar"
