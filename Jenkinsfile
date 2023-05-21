@@ -9,8 +9,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'echo "to test"'
-                //sh 'npm run test:unit' 
+                sh 'npm run test:unit' 
             }
         }
         stage('Triger Deploy pipeline'){
