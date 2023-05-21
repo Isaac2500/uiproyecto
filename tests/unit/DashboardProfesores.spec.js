@@ -75,6 +75,7 @@ describe('DashboardProfesores', () => {
     });
     await wrapper.find('#createUser').trigger('click');
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/crear/profesores');
+    wrapper.unmount();
   });
 
   it(`should redirect to /editar/${MODEL_NAME}`, async () => {
@@ -311,5 +312,6 @@ describe('DashboardProfesores', () => {
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith(
       `/dashboard${MODEL_NAME}es`
     );
+    wrapper.unmount();
   });
 });
