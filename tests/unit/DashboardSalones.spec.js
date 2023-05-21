@@ -1,7 +1,7 @@
 import VueTestUtils from '@vue/test-utils';
 import { expect, jest } from '@jest/globals';
 
-import DashboardAlumnos from '../../src/views/DashboardAlumnos.vue';
+import DashboardSalones from '../../src/views/DashboardSalones.vue';
 import Crear from '../../src/views/Crear.vue';
 import Editar from '../../src/views/Editar.vue';
 
@@ -10,15 +10,23 @@ import axios from 'axios';
 jest.mock('axios');
 
 // Mock utilities
-const MODEL_NAME = 'alumno';
-const listaAlumnos = [
+const MODEL_NAME = 'salones';
+const listaSalones = [
   {
     id: 1,
-    nombres: 'Mob',
-    apellidoPaterno: 'Kageyama',
-    apellidoMaterno: '',
-    matricula: 11111222,
-    promedio: 99,
+    nombre: 'G1',
+    tipo: 'Normal',
+    capacidad: 11,
+    estado: 'libre',
+    comodidades: 'si',
+  },
+  {
+    id: 2,
+    nombre: 'H2',
+    tipo: 'Laboratorio',
+    capacidad: 11,
+    estado: 'ocupado',
+    comodidades: 'no',
   },
 ];
 const AUTH_OBJECT = {
@@ -28,25 +36,26 @@ const AUTH_OBJECT = {
 };
 import { API_BASE_URL } from '../../config/api';
 
-describe('Dashboard Alumnos', () => {
+describe('Dashboard Salones', () => {
   it(`should render ${MODEL_NAME} dashboard`, async () => {
-    axios.get.mockResolvedValue({ data: listaAlumnos });
+    axios.get.mockResolvedValue({ data: listaSalones });
 
-    const wrapper = VueTestUtils.shallowMount(DashboardAlumnos);
+    const wrapper = VueTestUtils.shallowMount(DashboardSalones);
 
-    expect(wrapper.text()).toContain('Alumnos');
+    expect(wrapper.text()).toContain('Salones');
     expect(wrapper.text()).toContain('Id');
-    expect(wrapper.text()).toContain('Nombre(s)');
-    expect(wrapper.text()).toContain('Apellido Paterno');
-    expect(wrapper.text()).toContain('Apellido Materno');
-    expect(wrapper.text()).toContain('Matricula');
-    expect(wrapper.text()).toContain('Promedio');
+    expect(wrapper.text()).toContain('Nombre');
+    expect(wrapper.text()).toContain('Capacidad');
+    expect(wrapper.text()).toContain('Tipo');
+    expect(wrapper.text()).toContain('Comodidades');
+    expect(wrapper.text()).toContain('Estado');
+
     expect(axios.get).toHaveBeenCalledWith(
-      `${API_BASE_URL}/alumnos`,
+      `${API_BASE_URL}/salones`,
       AUTH_OBJECT
     );
 
-    await wrapper.vm.fetchAlumnos();
+    await wrapper.vm.fetchSalones();
     await wrapper.vm.$nextTick();
 
     // Wait api list
@@ -54,18 +63,19 @@ describe('Dashboard Alumnos', () => {
     const tableRows = wrapper.findAll('tbody tr');
 
     // Assert that the table contains the correct number of rows
-    expect(tableRows).toHaveLength(1);
+    expect(tableRows).toHaveLength(2);
 
     // Assert that the table rows contain the expected data
-    expect(tableRows[0].text()).toContain('1');
-    expect(tableRows[0].text()).toContain('Mob');
-    expect(tableRows[0].text()).toContain('Kageyama');
+    expect(tableRows[0].text()).toContain('G1');
+    expect(tableRows[0].text()).toContain('libre');
+    expect(tableRows[1].text()).toContain('H2');
+    expect(tableRows[1].text()).toContain('Laboratorio');
     // Reload the component by remounting it
     wrapper.unmount();
   });
 
-  it(`should redirect to /crear/${MODEL_NAME}s`, async () => {
-    const wrapper = VueTestUtils.shallowMount(DashboardAlumnos, {
+  it(`should redirect to /crear/${MODEL_NAME}`, async () => {
+    const wrapper = VueTestUtils.shallowMount(DashboardSalones, {
       global: {
         mocks: {
           $router: {
@@ -74,16 +84,16 @@ describe('Dashboard Alumnos', () => {
         },
       },
     });
-    await wrapper.find('#createUser').trigger('click');
+    await wrapper.find(`#create-${MODEL_NAME}`).trigger('click');
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith(
-      `/crear/${MODEL_NAME}s`
+      `/crear/${MODEL_NAME}`
     );
     wrapper.unmount();
   });
 
   it(`should redirect to /editar/${MODEL_NAME}s`, async () => {
     // Init a dashboard
-    const wrapper = VueTestUtils.shallowMount(DashboardAlumnos, {
+    const wrapper = VueTestUtils.shallowMount(DashboardSalones, {
       global: {
         mocks: {
           $router: {
@@ -95,7 +105,7 @@ describe('Dashboard Alumnos', () => {
 
     //Reload data
     await wrapper.setData({
-      listaAlumnos,
+      listaSalones,
     });
     await wrapper.vm.$nextTick();
 
@@ -106,7 +116,7 @@ describe('Dashboard Alumnos', () => {
     //Trigger a click and redirect to correct route
     await buttonEdit.trigger('click');
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith(
-      '/editar/' + firstId + '/alumnos'
+      '/editar/' + firstId + '/salones'
     );
     wrapper.unmount();
   });
@@ -119,7 +129,7 @@ describe('Dashboard Alumnos', () => {
             push: jest.fn(),
           },
           $route: {
-            path: '/crear/alumnos',
+            path: '/crear/salones',
             push: jest.fn(),
           },
         },
@@ -128,40 +138,41 @@ describe('Dashboard Alumnos', () => {
     await wrapper.vm.$nextTick();
 
     // Check form labels
-    expect(wrapper.text()).toContain('Nombre(s)');
-    expect(wrapper.text()).toContain('Apellido Paterno');
-    expect(wrapper.text()).toContain('Matricula');
-    expect(wrapper.text()).toContain('Apellido Materno');
-    expect(wrapper.text()).toContain('Promedio');
+    expect(wrapper.text()).toContain('Nombre');
+    expect(wrapper.text()).toContain('Comodidades');
+    expect(wrapper.text()).toContain('Capacidad');
+    expect(wrapper.text()).toContain('Tipo');
+    expect(wrapper.text()).toContain('Estado');
 
     //Fill inputs
-    wrapper.find('#form_name').setValue('Shanks');
-    wrapper.find('#form_apellidoPaterno').setValue('Akagami');
-    wrapper.find('#form_apellidoMaterno').setValue('');
-    wrapper.find('#form_matricula').setValue(1111123);
-    wrapper.find('#form_promedio').setValue(15);
+
+    wrapper.find('#form_name').setValue('AR1');
+    wrapper.find('#form_comodidades').setValue('si');
+    wrapper.find('#form_capacidad').setValue(5);
+    wrapper.find('#form_tipo').setValue('Artisticas');
+    wrapper.find('#form_estado').setValue('matenimiento');
 
     // Create mock post method
-    const newAlumno = {
-      id: 2,
-      apellidoMaterno: '',
-      apellidoPaterno: 'Akagami',
-      horasClase: 15,
-      nombres: 'Shanks',
-      numeroEmpleado: 1111123,
+    const newSalon = {
+      id: 3,
+      nombre: 'AR1',
+      tipo: 'Artisticas',
+      capacidad: 5,
+      estado: 'matenimiento',
+      comodidades: 'si',
     };
-    axios.post.mockResolvedValue({ data: newAlumno });
-    await wrapper.find('#send-alumno').trigger('click');
+    axios.post.mockResolvedValue({ data: newSalon });
+    await wrapper.find(`#send-${MODEL_NAME}`).trigger('click');
 
     // Check post API is called
     expect(axios.post).toHaveBeenCalledWith(
-      `${API_BASE_URL}/alumnos`,
+      `${API_BASE_URL}/salones`,
       {
-        apellidoMaterno: '',
-        apellidoPaterno: 'Akagami',
-        matricula: '1111123',
-        nombres: 'Shanks',
-        promedio: 15,
+        nombre: 'AR1',
+        tipo: 'Artisticas',
+        capacidad: 5,
+        estado: 'matenimiento',
+        comodidades: 'si',
       },
       {
         headers: {
@@ -171,14 +182,14 @@ describe('Dashboard Alumnos', () => {
     );
 
     // Check redirect to dashboard
-    expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/dashboardalumnos');
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/dashboardsalones');
     wrapper.unmount();
   });
 
   it(`should edit a ${MODEL_NAME}`, async () => {
     // Create mock get method
-    const currentAlumno = listaAlumnos[0];
-    axios.get.mockResolvedValue({ data: currentAlumno });
+    const currentAsignatura = listaSalones[0];
+    axios.get.mockResolvedValue({ data: currentAsignatura });
 
     // Render component
     const wrapper = VueTestUtils.shallowMount(Editar, {
@@ -188,7 +199,7 @@ describe('Dashboard Alumnos', () => {
             push: jest.fn(),
           },
           $route: {
-            path: '/editar/alumnos',
+            path: '/editar/salones',
             params: {
               id: 1,
             },
@@ -198,7 +209,7 @@ describe('Dashboard Alumnos', () => {
     });
 
     // Check get by ID API is called
-    expect(axios.get).toHaveBeenCalledWith(`${API_BASE_URL}/${MODEL_NAME}s/1`, {
+    expect(axios.get).toHaveBeenCalledWith(`${API_BASE_URL}/${MODEL_NAME}/1`, {
       headers: {
         Authorization: 'Bearer null',
       },
@@ -208,26 +219,25 @@ describe('Dashboard Alumnos', () => {
     await wrapper.vm.$nextTick();
 
     // Check form labels
-    expect(wrapper.text()).toContain('Nombre(s)');
-    expect(wrapper.text()).toContain('Apellido Paterno');
-    expect(wrapper.text()).toContain('Matricula');
-    expect(wrapper.text()).toContain('Promedio');
+    expect(wrapper.text()).toContain('Nombre');
+    expect(wrapper.text()).toContain('Estado');
+    expect(wrapper.text()).toContain('Tipo');
+    expect(wrapper.text()).toContain('Capacidad');
+    expect(wrapper.text()).toContain('Comodidades');
 
     //Check inputs has current data from alumno
-    expect(wrapper.find('#form_name').element.value).toContain('Mob');
-    expect(wrapper.find('#form_apellidoPaterno').element.value).toContain(
-      'Kageyama'
-    );
-    expect(wrapper.find('#form_apellidoMaterno').element.value).toContain('');
-    expect(wrapper.find('#form_matricula').element.value).toContain('11111222');
-    expect(wrapper.find('#form_promedio').element.value).toContain('99');
+    expect(wrapper.find('#form_name').element.value).toContain('G1');
+    expect(wrapper.find('#form_capacidad').element.value).toContain('11');
+    expect(wrapper.find('#form_tipo').element.value).toContain('Normal');
+    expect(wrapper.find('#form_comodidades').element.value).toContain('si');
+    expect(wrapper.find('#form_estado').element.value).toContain('libre');
 
     //Update field
-    wrapper.find('#form_apellidoMaterno').setValue('Perez');
+    wrapper.find('#form_estado').setValue('ocupado');
 
     // Mock API put call
     axios.put.mockResolvedValue({
-      data: { ...currentAlumno, apellidoMaterno: 'Perez' },
+      data: { ...currentAsignatura, estado: 'mantenimiento' },
     });
 
     //Trigger update event
@@ -235,13 +245,13 @@ describe('Dashboard Alumnos', () => {
 
     // Check put API is called
     expect(axios.put).toHaveBeenCalledWith(
-      `${API_BASE_URL}/${MODEL_NAME}s/1`,
+      `${API_BASE_URL}/${MODEL_NAME}/1`,
       {
-        apellidoMaterno: 'Perez',
-        apellidoPaterno: 'Kageyama',
-        matricula: 11111222,
-        nombres: 'Mob',
-        promedio: 99,
+        nombre: 'G1',
+        capacidad: 11,
+        comodidades: 'si',
+        tipo: 'Normal',
+        estado: 'ocupado',
       },
       {
         headers: {
@@ -251,14 +261,14 @@ describe('Dashboard Alumnos', () => {
     );
 
     // Check redirect to dashboard
-    expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/dashboardalumnos');
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith('/dashboardsalones');
     wrapper.unmount();
   });
 
   it(`should delete a ${MODEL_NAME}`, async () => {
-    axios.get.mockResolvedValue({ data: listaAlumnos });
+    axios.get.mockResolvedValue({ data: listaSalones });
     // Init a dashboard
-    const wrapper = VueTestUtils.shallowMount(DashboardAlumnos, {
+    const wrapper = VueTestUtils.shallowMount(DashboardSalones, {
       global: {
         mocks: {
           $router: {
@@ -269,13 +279,13 @@ describe('Dashboard Alumnos', () => {
     });
 
     // Wait api list
-    await wrapper.vm.fetchAlumnos();
+    await wrapper.vm.fetchSalones();
     await wrapper.vm.$nextTick();
 
     // Get the rendered table rows
     const tableRows = wrapper.findAll('tbody tr');
     // Assert that the table contains the correct number of rows
-    expect(tableRows).toHaveLength(1);
+    expect(tableRows).toHaveLength(2);
 
     // Check if delete button is available on first row
     const firstId = wrapper.find('tbody tr th:first-child').text();
@@ -283,22 +293,23 @@ describe('Dashboard Alumnos', () => {
 
     // Mock API delete call
     axios.delete.mockResolvedValue({
-      data: listaAlumnos[0],
+      data: listaSalones[0],
     });
-    axios.get.mockResolvedValue({ data: [] });
+    axios.get.mockResolvedValue({ data: [listaSalones[1]] });
 
     //Trigger a click and redirect to correct route
     await buttonDelete.trigger('click');
 
     // Check delete API is called
     expect(axios.delete).toHaveBeenCalledWith(
-      `${API_BASE_URL}/${MODEL_NAME}s/${firstId}`,
+      `${API_BASE_URL}/${MODEL_NAME}/${firstId}`,
       AUTH_OBJECT
     );
 
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith(
-      `/dashboard${MODEL_NAME}s`
+      `/dashboard${MODEL_NAME}`
     );
+
     wrapper.unmount();
   });
 });

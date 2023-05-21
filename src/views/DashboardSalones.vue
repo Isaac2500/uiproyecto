@@ -29,7 +29,7 @@
       </tbody>
     </table>
     <div class="container">
-        <b-button variant="success" v-on:click="create()">Crear Nuevo</b-button>
+        <b-button id="create-salones" variant="success" v-on:click="create()">Crear Nuevo</b-button>
 
     </div>
   </div>
