@@ -2,6 +2,11 @@
   "name": "uiproyecto",
   "version": "0.1.0",
   "private": true,
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -15,6 +20,7 @@
     "bootstrap-vue-3": "^0.5.1",
     "core-js": "^3.8.3",
     "dotenv": "^16.0.3",
+    "dotenv-webpack": "^8.0.1",
     "vue": "^3.2.47",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.0.13",
