@@ -1,12 +1,12 @@
 node {
   def remote = [:]
   remote.name = 'sonbear'
-  remote.host = '192.168.0.107'
+  remote.host = '192.168.0.101'
   remote.user = 'sonbear'
   remote.password = 'password'
   remote.allowAnyHosts = true
   stage('Get changes') {
-    sshCommand remote: remote, command: "git clone https://github.com/Isaac2500/uiproyecto.git || true"
+    sshCommand remote: remote, command: "git clone --branch develop https://github.com/Isaac2500/uiproyecto.git || true"
   }
   stage('Build project'){
     sshCommand remote: remote, command: "cd uiproyecto; git checkout develop; git pull origin develop; npm install; npm run build"
