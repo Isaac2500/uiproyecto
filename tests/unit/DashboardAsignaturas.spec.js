@@ -37,7 +37,7 @@ const AUTH_OBJECT = {
 import { API_BASE_URL } from '../../config/api';
 
 describe('Dashboard Asignaturas', () => {
-  it(`should render ${MODEL_NAME} dashboard`, async () => {
+  it(`should render ${MOEDL_NAME} dashboard`, async () => {
     axios.get.mockResolvedValue({ data: listaAsignaturas });
 
     const wrapper = VueTestUtils.shallowMount(DashboardAsignaturas);
