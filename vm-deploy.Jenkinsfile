@@ -16,6 +16,6 @@ node {
     sshCommand remote: remote, command: "echo 'password' | sudo -S mv /home/sonbear/uiproyecto/dist/* /var/www/html"
   }
   stage('Restart Nginx'){
-    sshCommand remote: remote, command: "echo 'password' | sudo systemctl reload nginx"
+    sshCommand remote: remote, command: "echo 'password' | sudo -S systemctl reload nginx"
   } 
 }
